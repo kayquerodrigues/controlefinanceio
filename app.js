@@ -3,6 +3,10 @@ const PAYMENT_TYPES = ["PIX", "BOLETO", "DINHEIRO", "CARTAO"];
 const SERVICE_STATUS = ["Recebido", "Pendente", "Cancelado"];
 const COLORS = ["#2563eb", "#0f9f6e", "#c47a00", "#0891b2", "#7c3aed", "#db3b4b", "#475569"];
 const STORAGE_KEY = "financeiroServicosExternos.producao.v1";
+const SUPABASE_URL = "https://kruphmnwawsxcgvnaibf.supabase.co";
+const SUPABASE_KEY = "SUA_CHAVE_PUBLICA_AQUI";
+
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
 const dateFmt = new Intl.DateTimeFormat("pt-BR", { timeZone: "UTC" });
@@ -24,17 +28,33 @@ const emptyState = {
   appliedFilters: { start: "", end: "", state: "", payment: "", supplier: "", status: "" }
 };
 
-let state = loadState();
+let state = structuredClone(emptyState);
+
+loadState().then((data) => {
+  state = data;
+});
 let importBuffer = [];
 let currentImportMeta = null;
 let chartHitAreas = {};
 
-function loadState() {
+async function loadState() {
   try {
+    const { data } = await supabaseClient
+      .from("dados")
+      .select("*")
+      .eq("id", 1)
+      .single();
+
+    if (data?.conteudo) {
+      return data.conteudo;
+    }
+
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     return saved ? { ...emptyState, ...saved } : structuredClone(emptyState);
+
   } catch {
-    return structuredClone(emptyState);
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    return saved ? { ...emptyState, ...saved } : structuredClone(emptyState);
   }
 }
 function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
