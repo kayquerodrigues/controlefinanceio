@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Controle Financeiro Operacional</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main id="loginView" class="login-shell">
+      <section class="login-panel" aria-labelledby="loginTitle">
+        <div class="brand-mark">CF</div>
+        <h1 id="loginTitle">Controle Financeiro</h1>
+        <p>Acesse a plataforma para controlar serviços externos, fornecedores, recebimentos e lucro.</p>
+        <form id="loginForm" class="stack">
+          <label>
+            E-mail
+            <input id="loginEmail" type="email" autocomplete="email" required value="admin@empresa.com" />
+          </label>
+          <label>
+            Senha
+            <input id="loginPassword" type="password" autocomplete="current-password" required value="admin123" />
+          </label>
+          <button class="primary-action" type="submit">Entrar</button>
+          <small>Admin: admin@empresa.com / admin123 · Operador: operador@empresa.com / op123</small>
+          <p id="loginError" class="form-error" role="alert"></p>
+        </form>
+      </section>
+    </main>
+
+    <main id="appView" class="app-shell hidden">
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <div class="brand-mark">CF</div>
+          <div>
+            <strong>Financeiro</strong>
+            <span>Serviços externos</span>
+          </div>
+        </div>
+        <nav aria-label="Principal">
+          <button class="nav-link active" data-view="dashboard">Dashboard</button>
+          <button class="nav-link" data-view="services">Serviços</button>
+          <button class="nav-link" data-view="suppliers">Fornecedores</button>
+          <button class="nav-link" data-view="reports">Relatórios</button>
+          <button class="nav-link" data-view="import">Importação</button>
+          <button class="nav-link admin-only" data-view="users">Usuários</button>
+        </nav>
+        <div class="session-card">
+          <span id="sessionUser"></span>
+          <button id="logoutBtn" class="ghost-action" type="button">Sair</button>
+        </div>
+      </aside>
+
+      <section class="workspace">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">Operação financeira</p>
+            <h1 id="pageTitle">Dashboard</h1>
+          </div>
+          <div class="quick-search">
+            <input id="quickSearch" type="search" placeholder="Buscar placa, estado, fornecedor, valor..." />
+          </div>
+        </header>
+
+        <section class="filter-bar" aria-label="Filtros de relatório">
+          <label>Data inicial<input id="filterStart" type="date" /></label>
+          <label>Data final<input id="filterEnd" type="date" /></label>
+          <label>Estado<select id="filterState"><option value="">Todos</option></select></label>
+          <label>Recebimento<select id="filterPayment"><option value="">Todos</option></select></label>
+          <label>Fornecedor<select id="filterSupplier"><option value="">Todos</option></select></label>
+          <label>Status<select id="filterStatus"><option value="">Todos</option></select></label>
+          <button id="applyFilters" class="primary-action" type="button">FILTRAR</button>
+          <button id="clearFilters" class="ghost-action" type="button">Limpar</button>
+        </section>
+
+        <section id="dashboard" class="view active-view">
+          <div id="metricCards" class="metric-grid"></div>
+          <div class="panel-grid">
+            <article class="panel wide">
+              <div class="panel-heading">
+                <h2>Recebimentos, pagamentos e lucro</h2>
+                <span id="periodLabel"></span>
+              </div>
+              <canvas id="financialChart" height="260"></canvas>
+              <div id="financialLegend" class="chart-legend"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-heading"><h2>PIX x boleto</h2></div>
+              <canvas id="paymentChart" height="260"></canvas>
+              <div id="paymentLegend" class="chart-legend"></div>
+            </article>
+            <article class="panel">
+              <div class="panel-heading"><h2>Estados</h2></div>
+              <canvas id="stateChart" height="260"></canvas>
+              <div id="stateLegend" class="chart-legend"></div>
+            </article>
+            <article class="panel wide">
+              <div class="panel-heading"><h2>Financeiro diário</h2></div>
+              <div id="dailyFinance" class="daily-grid"></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="services" class="view">
+          <article class="panel">
+            <div class="panel-heading">
+              <h2>Lançar serviço</h2>
+              <button id="sampleBtn" class="ghost-action" type="button">Carregar exemplos</button>
+            </div>
+            <form id="serviceForm" class="form-grid">
+              <input type="hidden" id="serviceId" />
+              <label>Data<input id="serviceDate" type="date" required /></label>
+              <label>Placa<input id="servicePlate" type="text" placeholder="ABC1D23" required /></label>
+              <label>Valor cobrado<input id="serviceReceived" type="number" min="0" step="0.01" required /></label>
+              <label>Pago fornecedor<input id="servicePaid" type="number" min="0" step="0.01" required /></label>
+              <label>Estado<select id="serviceState" required></select></label>
+              <label>Recebimento<select id="servicePayment" required></select></label>
+              <label>Fornecedor<select id="serviceSupplier" required></select></label>
+              <label>Tipo de serviço<input id="serviceType" type="text" placeholder="CRLV, consulta..." required /></label>
+              <label>Status<select id="serviceStatus" required></select></label>
+              <label class="span-2">Observação<textarea id="serviceNote" rows="3"></textarea></label>
+              <div class="form-actions span-2">
+                <button class="primary-action" type="submit">Salvar serviço</button>
+                <button id="resetServiceForm" class="ghost-action" type="button">Novo</button>
+              </div>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><h2>Serviços lançados</h2><span id="serviceCount"></span></div>
+            <div class="table-wrap"><table id="servicesTable"></table></div>
+          </article>
+        </section>
+
+        <section id="suppliers" class="view">
+          <article class="panel">
+            <div class="panel-heading"><h2>Gerenciar fornecedores</h2></div>
+            <form id="supplierForm" class="form-grid">
+              <input type="hidden" id="supplierId" />
+              <label>Nome<input id="supplierName" required /></label>
+              <label>Contato<input id="supplierContact" /></label>
+              <label>Estado<select id="supplierState"></select></label>
+              <label>Tipo de serviço<input id="supplierType" /></label>
+              <label>Status<select id="supplierStatus"><option>Ativo</option><option>Inativo</option></select></label>
+              <label class="span-2">Observação<textarea id="supplierNote" rows="3"></textarea></label>
+              <div class="form-actions span-2">
+                <button class="primary-action admin-write" type="submit">Salvar fornecedor</button>
+                <button id="resetSupplierForm" class="ghost-action" type="button">Novo</button>
+              </div>
+            </form>
+          </article>
+          <article class="panel">
+            <div class="panel-heading"><h2>Histórico financeiro por fornecedor</h2></div>
+            <div class="table-wrap"><table id="suppliersTable"></table></div>
+          </article>
+        </section>
+
+        <section id="reports" class="view">
+          <article class="panel report-panel" id="printArea">
+            <div class="report-header">
+              <div class="brand-mark">CF</div>
+              <div>
+                <h2>Relatório financeiro operacional</h2>
+                <span id="reportDate"></span>
+              </div>
+            </div>
+            <div id="reportSummary" class="metric-grid compact"></div>
+            <div class="report-columns">
+              <div><h3>Ranking de estados</h3><table id="stateReportTable"></table></div>
+              <div><h3>Ranking de fornecedores</h3><table id="supplierReportTable"></table></div>
+            </div>
+            <div><h3>Relatório detalhado</h3><table id="detailReportTable"></table></div>
+          </article>
+          <div class="export-actions">
+            <button id="printReport" class="primary-action" type="button">Gerar PDF / Imprimir</button>
+            <button id="exportCsv" class="ghost-action" type="button">Exportar CSV</button>
+            <button id="exportExcel" class="ghost-action" type="button">Exportar Excel</button>
+          </div>
+        </section>
+
+        <section id="import" class="view">
+          <article class="panel">
+            <div class="panel-heading">
+              <h2>Importação inteligente com prévia obrigatória</h2>
+              <button id="downloadTemplate" class="ghost-action" type="button">BAIXAR PLANILHA MODELO</button>
+            </div>
+            <div id="dropZone" class="drop-zone">
+              <strong>Arraste o arquivo aqui</strong>
+              <span>CSV, XLSX, OFX e OFC geram prévia automática. PDF e imagens entram na fila de OCR/IA para revisão manual nesta versão local.</span>
+              <input id="importFile" type="file" accept=".csv,.tsv,.txt,.xlsx,.xls,.ofx,.ofc,.pdf,.jpg,.jpeg,.png,.webp" />
+            </div>
+            <div class="import-actions">
+              <button id="commitImport" class="primary-action" type="button" disabled>CONFIRMAR IMPORTAÇÃO</button>
+              <button id="clearImport" class="ghost-action" type="button">CANCELAR IMPORTAÇÃO</button>
+            </div>
+            <div class="progress-track" aria-label="Progresso da importação"><span id="importProgress"></span></div>
+            <div id="aiStatus" class="ai-status"></div>
+            <p class="muted">Nada é salvo automaticamente. Toda leitura gera uma prévia completa, editável e cancelável. Colunas obrigatórias: DATA, PLACA, ESTADO, RECEBIMENTO, VALOR RECEBIDO, VALOR FORNECEDOR, FORNECEDOR, TIPO SERVIÇO e STATUS.</p>
+            <div id="importSummary" class="import-summary"></div>
+            <div id="importStatus" class="notice"></div>
+            <div class="table-wrap"><table id="importTable"></table></div>
+            <div class="panel-heading import-history-heading"><h2>Histórico de importações</h2></div>
+            <div class="table-wrap"><table id="importHistoryTable"></table></div>
+          </article>
+        </section>
+
+        <section id="users" class="view">
+          <article class="panel">
+            <div class="panel-heading"><h2>Usuários e permissões</h2></div>
+            <form id="userForm" class="form-grid">
+              <label>Nome<input id="userName" required /></label>
+              <label>E-mail<input id="userEmail" type="email" required /></label>
+              <label>Senha<input id="userPassword" type="password" required /></label>
+              <label>Perfil<select id="userRole"><option value="ADMIN">ADMIN</option><option value="OPERADOR">OPERADOR</option></select></label>
+              <div class="form-actions span-2"><button class="primary-action" type="submit">Criar usuário</button></div>
+            </form>
+            <div class="table-wrap"><table id="usersTable"></table></div>
+          </article>
+        </section>
+      </section>
+    </main>
+
+    <div id="chartTooltip" class="chart-tooltip hidden"></div>
+    <script src="app.js"></script>
+  </body>
+</html>
