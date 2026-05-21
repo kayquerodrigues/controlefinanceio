@@ -1,6 +1,3 @@
-function saveState() { 
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
-}
 const BR_STATES = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 const PAYMENT_TYPES = ["PIX", "BOLETO", "DINHEIRO", "CARTAO"];
 const SERVICE_STATUS = ["Recebido", "Pendente", "Cancelado"];
@@ -40,11 +37,7 @@ function loadState() {
     return structuredClone(emptyState);
   }
 }
-async function saveState() {
-
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
-
-// await salvarSupabase();}
+function saveState() { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
 function currentUser() { return state.users.find((user) => user.id === state.session); }
 function isAdmin() { return currentUser()?.role === "ADMIN"; }
 function toNumber(value) { return Number(String(value ?? 0).replace(/\./g, "").replace(",", ".")) || 0; }
