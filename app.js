@@ -61,8 +61,7 @@ async function saveState() {
 
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 
-  await salvarSupabase();
-}
+// await salvarSupabase();}
 function currentUser() { return state.users.find((user) => user.id === state.session); }
 function isAdmin() { return currentUser()?.role === "ADMIN"; }
 function toNumber(value) { return Number(String(value ?? 0).replace(/\./g, "").replace(",", ".")) || 0; }
