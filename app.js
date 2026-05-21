@@ -1,22 +1,5 @@
-const supabaseUrl = 'https://kruphmnwawsxcgvnaibf.supabase.co';
-
-const supabaseKey = 'sb_publishable_yL6dVvgSX3KJ0HPGJ1m9vQ_T2t-6n6E';
-
-const supabase = window.supabase.createClient(
-  supabaseUrl,
-  supabaseKey
-);
-async function salvarSupabase() {
-
-  const { error } = await supabase
-    .from('servicos')
-    .insert(state);
-
-  if(error){
-    console.log(error);
-  } else {
-    console.log('Dados salvos no Supabase');
-  }
+function saveState() { 
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); 
 }
 const BR_STATES = ["AC","AL","AP","AM","BA","CE","DF","ES","GO","MA","MT","MS","MG","PA","PB","PR","PE","PI","RJ","RN","RS","RO","RR","SC","SP","SE","TO"];
 const PAYMENT_TYPES = ["PIX", "BOLETO", "DINHEIRO", "CARTAO"];
