@@ -39,20 +39,17 @@ let importBuffer = [];
 let currentImportMeta = null;
 let chartHitAreas = {};
 
-let state = structuredClone(emptyState);
+async function loadState() {
+  try {
+    const { data } = await supabaseClient
+      .from("dados")
+      .select("*")
+      .eq("id", 1)
+      .single();
 
-const emptyState = {
-  ...
-};
-
-let state = structuredClone(emptyState);
-
-loadState().then(data => {
-  state = { ...emptyState, ...data };
-  init();
-});
-
-let importBuffer = [];
+    if (data?.conteudo) {
+      return data.conteudo;
+    }
 
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     return saved ? { ...emptyState, ...saved } : structuredClone(emptyState);
@@ -1090,3 +1087,4 @@ window.deleteService = deleteService;
 window.editSupplier = editSupplier;
 window.deleteSupplier = deleteSupplier;
 window.addEventListener("resize", renderAll);
+init();
