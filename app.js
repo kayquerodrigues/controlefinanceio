@@ -30,24 +30,29 @@ const emptyState = {
 
 let state = structuredClone(emptyState);
 
-loadState().then((data) => {
-  state = data;
-});
+let state = structuredClone(emptyState);
+(async () => {
+  state = await loadState();
+  init();
+})();
 let importBuffer = [];
 let currentImportMeta = null;
 let chartHitAreas = {};
 
-async function loadState() {
-  try {
-    const { data } = await supabaseClient
-      .from("dados")
-      .select("*")
-      .eq("id", 1)
-      .single();
+let state = structuredClone(emptyState);
 
-    if (data?.conteudo) {
-      return data.conteudo;
-    }
+const emptyState = {
+  ...
+};
+
+let state = structuredClone(emptyState);
+
+loadState().then(data => {
+  state = { ...emptyState, ...data };
+  init();
+});
+
+let importBuffer = [];
 
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
     return saved ? { ...emptyState, ...saved } : structuredClone(emptyState);
@@ -1085,4 +1090,3 @@ window.deleteService = deleteService;
 window.editSupplier = editSupplier;
 window.deleteSupplier = deleteSupplier;
 window.addEventListener("resize", renderAll);
-init();
